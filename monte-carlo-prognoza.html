@@ -381,7 +381,7 @@ body.present .ctable{font-size:16px}
 <div class="tabs" role="tablist">
   <button class="tab" role="tab" id="tabA" aria-controls="panelA" aria-selected="true">Na kiedy to będzie?</button>
   <button class="tab" role="tab" id="tabB" aria-controls="panelB" aria-selected="false">Ile zdążymy do…?</button>
-  <button class="tab" role="tab" id="tabC" aria-controls="panelC" aria-selected="false">Porównanie zespołów</button>
+  <button class="tab" role="tab" id="tabC" aria-controls="panelC" aria-selected="false">Porównanie danych</button>
 </div>
 
 <section class="panel" id="panelA" role="tabpanel" aria-labelledby="tabA">
@@ -394,9 +394,20 @@ body.present .ctable{font-size:16px}
       <div class="err" id="a_capErr"></div>
     </div>
     <div class="field">
-      <label for="a_growth"><span class="term" tabindex="0" data-def="O ile procent backlog urośnie w trakcie prac, bo wychodzą nowe historyjki, podziały i poprawki. 20% przy 30 historyjkach to 36 historyjek do zrobienia.">Wzrost zakresu</span> w trakcie prac</label>
-      <div class="rangeRow"><input id="a_growth" type="range" min="0" max="60" step="5" value="0"><output id="a_growthOut">0%</output></div>
-      <label class="chk"><input type="checkbox" id="a_growthRand"> Niepewny wzrost – w każdej symulacji losuj wartość od 0% do ustawionej</label>
+      <label for="a_growthMode"><span class="term" tabindex="0" data-def="O ile procent backlog urośnie w trakcie prac, bo wychodzą nowe historyjki i poprawki. Najlepiej zmierzyć to na zamkniętych epikach: (historyjki przy zamknięciu − historyjki na starcie) ÷ historyjki na starcie.">Wzrost zakresu</span> w trakcie prac</label>
+      <select id="a_growthMode" style="width:100%">
+        <option value="none" selected>brak</option>
+        <option value="fixed">stały procent</option>
+        <option value="hist">z historii epików</option>
+      </select>
+      <div id="a_growthFixed" style="margin-top:10px" hidden>
+        <div class="rangeRow"><input id="a_growth" type="range" min="0" max="100" step="5" value="20" aria-label="Wzrost zakresu w procentach"><output id="a_growthOut">20%</output></div>
+      </div>
+      <div id="a_growthHist" style="margin-top:10px" hidden>
+        <input id="a_growthList" type="text" value="10, 30, 0, 45, 15, -5" aria-label="Wzrost zakresu w zamkniętych epikach, w procentach">
+        <div class="hint">Wzrost w zamkniętych epikach, w procentach, oddzielony przecinkami. Policz dla każdego epika: (historyjki przy zamknięciu − historyjki na starcie) ÷ historyjki na starcie × 100. Wartość ujemna oznacza wycięty zakres. Każda symulacja losuje jedną wartość z listy.</div>
+        <div class="err" id="a_growthErr"></div>
+      </div>
     </div>
     <div class="field">
       <label for="a_sims">Liczba symulacji</label>
@@ -578,10 +589,10 @@ body.present .ctable{font-size:16px}
 <section class="panel" id="panelC" role="tabpanel" aria-labelledby="tabC" hidden>
 <div class="grid">
   <div class="card">
-    <h2>Porównaj dwa zespoły</h2>
+    <h2>Porównaj dwa zbiory danych</h2>
     <div class="team">
-      <div class="tt"><span class="dot" style="background:var(--s1)"></span>Zespół A<button class="mini" id="c_loadMain" style="margin-left:auto">Wczytaj historię z góry strony</button></div>
-      <input id="c_histA" type="text" value="4, 4, 3, 5, 4, 4, 5, 3, 4, 4" aria-label="Historia zespołu A">
+      <div class="tt"><span class="dot" style="background:var(--s1)"></span>Dane A<button class="mini" id="c_loadMain" style="margin-left:auto">Wczytaj historię z góry strony</button></div>
+      <input id="c_histA" type="text" value="4, 4, 3, 5, 4, 4, 5, 3, 4, 4" aria-label="Dane A: historyjki na tydzień">
       <div class="err" id="c_errA"></div>
       <div class="gen2">
         <div class="field"><label for="c_avgA">Średnio</label><input id="c_avgA" type="number" min="0.5" max="50" step="0.5" value="4"></div>
@@ -590,15 +601,15 @@ body.present .ctable{font-size:16px}
       </div>
     </div>
     <div class="team">
-      <div class="tt"><span class="dot" style="background:var(--s2)"></span>Zespół B</div>
-      <input id="c_histB" type="text" value="1, 8, 2, 7, 0, 6, 3, 9, 2, 2" aria-label="Historia zespołu B">
+      <div class="tt"><span class="dot" style="background:var(--s2)"></span>Dane B</div>
+      <input id="c_histB" type="text" value="1, 8, 2, 7, 0, 6, 3, 9, 2, 2" aria-label="Dane B: historyjki na tydzień">
       <div class="err" id="c_errB"></div>
       <div class="gen2">
         <div class="field"><label for="c_avgB">Średnio</label><input id="c_avgB" type="number" min="0.5" max="50" step="0.5" value="4"></div>
         <div class="field"><label for="c_varB">Zmienność</label><select id="c_varB"><option value="0.2">niska</option><option value="0.45">średnia</option><option value="0.8" selected>wysoka</option></select></div>
         <button id="c_genB">Losuj</button>
       </div>
-      <button class="mini" id="c_sameAvg" style="margin-top:8px">Ustaw średnią jak w zespole A</button>
+      <button class="mini" id="c_sameAvg" style="margin-top:8px">Ustaw średnią jak w danych A</button>
     </div>
     <div class="err" id="c_genErr" style="margin:-6px 0 12px"></div>
     <div class="field">
@@ -607,7 +618,7 @@ body.present .ctable{font-size:16px}
       <div class="err" id="c_backlogErr"></div>
     </div>
     <div class="field">
-      <label for="c_sims">Liczba symulacji (na zespół)</label>
+      <label for="c_sims">Liczba symulacji (dla każdego zbioru)</label>
       <input id="c_sims" type="number" min="1" max="200000" step="1" value="10000">
       <div class="presets" id="c_presets">
         <button data-n="10">10</button><button data-n="100">100</button><button data-n="1000">1 000</button><button data-n="10000">10 000</button>
@@ -618,22 +629,22 @@ body.present .ctable{font-size:16px}
       <button class="primary" id="c_run">Symuluj</button>
       <button id="c_reset">Wyczyść</button>
     </div>
-    <p class="note">Wpisz historie obu zespołów albo je wylosuj. Gdy średnie się różnią, różnica terminów jest rozbijana na część wynikającą z tempa i ze zmienności. Data startu, dni wolne i niepewność średniej z góry strony działają też tutaj.</p>
+    <p class="note">To ćwiczenie o danych, nie ocena zespołów: pokazuje, jak tempo i zmienność wpływają na prognozę. Wpisz oba zbiory albo je wylosuj. Gdy średnie się różnią, różnica terminów jest rozbijana na część wynikającą z tempa i ze zmienności. Data startu, dni wolne i niepewność średniej z góry strony działają też tutaj.</p>
   </div>
   <div class="card">
     <div class="warn" id="c_warn"></div>
     <div class="info" id="c_info"></div>
-    <p class="answer" id="c_answer">Uruchom symulację, żeby porównać zespoły.</p>
+    <p class="answer" id="c_answer">Uruchom symulację, żeby porównać zbiory danych.</p>
     <div class="progress" id="c_prog"><span id="c_progText">Gotowe do startu</span><div class="bar"><i id="c_progBar"></i></div></div>
     <div class="legend">
-      <span><b style="background:var(--s1)"></b>Zespół A</span>
-      <span><b style="background:var(--s2)"></b>Zespół B</span>
-      <span><i class="dash"></i>P85 każdego zespołu</span>
+      <span><b style="background:var(--s1)"></b>Dane A</span>
+      <span><b style="background:var(--s2)"></b>Dane B</span>
+      <span><i class="dash"></i>P85 każdego zbioru</span>
     </div>
-    <div class="chartBox" id="c_box"><canvas id="c_chart" role="img" aria-label="Porównanie rozkładów terminów dla dwóch zespołów"></canvas><div class="tip" id="c_tip"></div></div>
+    <div class="chartBox" id="c_box"><canvas id="c_chart" role="img" aria-label="Porównanie rozkładów terminów dla dwóch zbiorów danych"></canvas><div class="tip" id="c_tip"></div></div>
     <div class="secHead"><h2>Podsumowanie</h2></div>
     <div class="tableWrap"><table class="ptable ctable" id="c_table"></table></div>
-    <p class="tblNote">Zmienność to odchylenie standardowe z próby tygodniowych wyników, a w nawiasie zmienność względna (odchylenie ÷ średnia) – tylko ją da się uczciwie porównać, gdy średnie są różne. Różnica B − A: plus oznacza, że zespół B kończy później. „Przez tempo” to część różnicy, która zostaje po wyrównaniu średniej zespołu B do A; „przez zmienność” to reszta. Różnice o 1 tydzień mieszczą się zwykle w szumie losowania.</p>
+    <p class="tblNote">Zmienność to odchylenie standardowe z próby tygodniowych wyników, a w nawiasie zmienność względna (odchylenie ÷ średnia) – tylko ją da się uczciwie porównać, gdy średnie są różne. Różnica B − A: plus oznacza, że przy danych B termin wypada później. „Przez tempo” to część różnicy, która zostaje po wyrównaniu średniej danych B do A; „przez zmienność” to reszta. Różnice o 1 tydzień mieszczą się zwykle w szumie losowania.</p>
   </div>
 </div>
 </section>
@@ -677,7 +688,7 @@ body.present .ctable{font-size:16px}
     <div><dt>Percentyl (P50, P85, P95)</dt><dd>P85 to najwcześniejszy termin, do którego kończy się co najmniej 85% symulacji. Liczymy w pełnych tygodniach, więc szansa rośnie skokami i rzeczywista wartość bywa trochę wyższa, np. 87%.</dd></div>
     <div><dt>Pewność</dt><dd>Odsetek symulacji, które spełniły warunek, np. skończyły backlog do danego dnia. To nie gwarancja, tylko szansa przy założeniu, że przyszłość będzie podobna do przeszłości.</dd></div>
     <div><dt>Zmienność</dt><dd>Jak bardzo tygodniowe wyniki różnią się od średniej. Większa zmienność oznacza szerszy rozkład i późniejszą datę z wysoką pewnością.</dd></div>
-    <div><dt>Wzrost zakresu</dt><dd>Nowe historyjki, które pojawiają się w trakcie prac. Bez jego uwzględnienia prognoza jest zbyt optymistyczna.</dd></div>
+    <div><dt>Wzrost zakresu</dt><dd>Nowe historyjki, które pojawiają się w trakcie prac. Najlepiej zmierzyć go na zamkniętych epikach i losować z tej listy, tak jak tempo. Bez niego prognoza jest zbyt optymistyczna.</dd></div>
     <div><dt>Niepewność średniej</dt><dd>Średnia z kilku tygodni to tylko przybliżenie prawdziwego tempa. Bootstrap dwupoziomowy uwzględnia ten błąd: w każdej symulacji losuje inną wersję historii, a dopiero z niej przyszłe tygodnie.</dd></div>
     <div><dt>Wachlarz symulacji</dt><dd>Linie pojedynczych przebiegów narysowane razem. Pokazuje, jak różne mogą być możliwe przyszłości przy tym samym zespole.</dd></div>
   </dl>
@@ -914,7 +925,7 @@ function setProg(p,S,emptyText){
   el.classList.remove('stale');el.classList.toggle('running',!!S.anim);
   const pct=S.target?Math.min(100,S.done/S.target*100):0;
   $(p+'_progBar').style.width=pct+'%';
-  $(p+'_progText').textContent=S.done?('Wykonano '+nf.format(S.done)+(S.target&&S.done<=S.target?' / '+nf.format(S.target):'')+' symulacji'+(S.perTeam?' na zespół':'')+(S.progSuffix?S.progSuffix():'')):(emptyText||'Gotowe do startu');
+  $(p+'_progText').textContent=S.done?('Wykonano '+nf.format(S.done)+(S.target&&S.done<=S.target?' / '+nf.format(S.target):'')+' symulacji'+(S.perTeam?' dla każdego zbioru':'')+(S.progSuffix?S.progSuffix():'')):(emptyText||'Gotowe do startu');
 }
 function markStale(S){S.stale=true;S.render();}
 function pendingView(p){
@@ -999,7 +1010,17 @@ function rowHtml(cells,s,cls){
 function uniqSorted(arr){return [...new Set(arr.filter(v=>v!=null&&v>=0))].sort((a,b)=>a-b);}
 function drawsText(d,limit){return d.length>limit?d.slice(0,limit).join(' + ')+' + …':d.join(' + ');}
 
-function growthPct(){return Number($('a_growth').value);}
+function readGrowth(){
+  $('a_growthErr').textContent='';
+  const mode=$('a_growthMode').value;
+  if(mode==='none')return {mode,list:[0]};
+  if(mode==='fixed')return {mode,list:[Number($('a_growth').value)]};
+  const raw=$('a_growthList').value.split(/[,;\s]+/).filter(x=>x!=='').map(x=>Number(x.replace('%','').replace(',','.')));
+  if(!raw.length||raw.some(x=>isNaN(x))){$('a_growthErr').textContent='Wpisz liczby oddzielone przecinkami, np. 10, 30, 0, -5.';return null;}
+  if(raw.some(x=>x<=-100||x>500)){$('a_growthErr').textContent='Każda wartość musi być większa niż −100% i nie większa niż 500%.';return null;}
+  return {mode,list:raw};
+}
+function showGrowth(){const m=$('a_growthMode').value;$('a_growthFixed').hidden=m!=='fixed';$('a_growthHist').hidden=m!=='hist';}
 function naiveA(){
   if(!A.done||!A.ctx)return null;
   const avg=avgOf(A.ctx.h),w=A.ctx.expTotal/avg;const d=startDate();d.setDate(d.getDate()+Math.round(w*7));
@@ -1010,18 +1031,20 @@ const A=makeSim('a',{
   seedK:1,
   xLabel:'tygodnie do zakończenia',
   horizon:()=>horizonMsg(A.ctx.maxTotal/avgOf(A.ctx.h),A.ctx.h.length,A.ctx.unc),
-  progSuffix:()=>A.ctx?' · zakres: '+(A.ctx.rand&&A.ctx.maxTotal>A.ctx.base?A.ctx.base+'–'+A.ctx.maxTotal+' '+hist_pl(A.ctx.maxTotal)+' (losowo)':A.ctx.maxTotal+' '+hist_pl(A.ctx.maxTotal))+(A.ctx.unc?' · z niepewnością średniej':''):'',
+  progSuffix:()=>A.ctx?' · zakres: '+(A.ctx.minTotal!==A.ctx.maxTotal?A.ctx.minTotal+'–'+A.ctx.maxTotal+' '+hist_pl(A.ctx.maxTotal)+' (wzrost z historii epików)':A.ctx.maxTotal+' '+hist_pl(A.ctx.maxTotal))+(A.ctx.unc?' · z niepewnością średniej':''):'',
   read:h=>{
     $('a_capErr').textContent='';
-    const base=Number($('a_backlog').value),g=growthPct(),rand=$('a_growthRand').checked;
-    const maxTotal=Math.round(base*(1+g/100));
+    const gr=readGrowth();if(!gr)return null;
+    const base=Number($('a_backlog').value),list=gr.list;
+    const tot=g=>Math.max(1,Math.round(base*(1+g/100)));
+    const maxTotal=tot(Math.max(...list)),minTotal=tot(Math.min(...list));
     const msg=capMsg(maxTotal,h);if(msg){$('a_capErr').textContent=msg;return null;}
-    const expTotal=rand?base*(1+g/200):maxTotal;
+    const expTotal=base*(1+avgOf(list)/100);
     const unc=uncOn();
-    return {h,base,g,rand,maxTotal,expTotal,unc,caps:capArray(MAXW),key:h.join(',')+'|'+base+'|'+g+'|'+rand+'|'+unc+'|'+offKey()};
+    return {h,base,list,maxTotal,minTotal,expTotal,unc,caps:capArray(MAXW),key:h.join(',')+'|'+base+'|'+list.join(',')+'|'+unc+'|'+offKey()};
   },
   simulate:(ctx,r)=>{
-    const total=ctx.rand?Math.round(ctx.base*(1+r()*ctx.g/100)):ctx.maxTotal;
+    const total=ctx.list.length===1?ctx.maxTotal:Math.max(1,Math.round(ctx.base*(1+pick(ctx.list,r)/100)));
     let left=total,w=0;const draws=[],pts=[total];const hh=ctx.unc?resample(ctx.h,r):ctx.h;
     while(left>0&&w<MAXW){const c=ctx.caps[w];const t=eff(pick(hh,r),c,r);left-=t;draws.push(c<1?t+'*':t);w++;pts.push(Math.max(0,left));}
     return {value:w,draws,pts,total,capped:left>0};
@@ -1217,7 +1240,7 @@ C.render=()=>{
   const ans=$('c_answer'),tb=$('c_table');
   $('panelC').classList.toggle('running',!!C.anim);
   if(C.anim){ans.textContent='Trwa symulacja – wyniki pojawią się po jej zakończeniu.';tb.innerHTML='';$('c_info').innerHTML='';drawCompare();return;}
-  if(!C.done||!C.ctx){ans.textContent='Uruchom symulację, żeby porównać zespoły.';tb.innerHTML='';$('c_info').innerHTML='';drawCompare();return;}
+  if(!C.done||!C.ctx){ans.textContent='Uruchom symulację, żeby porównać zbiory danych.';tb.innerHTML='';$('c_info').innerHTML='';drawCompare();return;}
   const sA=meanSd(C.ctx.hA),sB=meanSd(C.ctx.hB);
   $('c_info').innerHTML=horizonMsg(C.ctx.total/Math.min(sA.m,sB.m),Math.min(C.ctx.hA.length,C.ctx.hB.length),C.ctx.unc);
   const q=(m,x)=>qUp(m,C.done,x);
@@ -1227,13 +1250,13 @@ C.render=()=>{
   const dTxt=d=>d===0?'0':(d>0?'+':'−')+Math.abs(d)+' tyg.';
   let t;
   if(sameMean){
-    t='Oba zespoły kończą średnio '+nf1.format(sA.m)+' historyjki na tydzień, ale zmienność A to ±'+nf1.format(sA.sd)+', a B ±'+nf1.format(sB.sd)+'. ';
+    t='Oba zbiory mają średnio '+nf1.format(sA.m)+' historyjki na tydzień, ale zmienność A to ±'+nf1.format(sA.sd)+', a B ±'+nf1.format(sB.sd)+'. ';
     if(d85===0)t+='Termin P85 wychodzi dla obu taki sam: <b>'+fmtWeeks(a85,true)+'</b>.';
-    else t+='Przez to termin P85 różni się o <b>'+Math.abs(d85)+' '+tyg_pl(Math.abs(d85))+'</b> – zespół '+(d85>0?'B':'A')+' potrzebuje bufora do '+fmtWeeks(Math.max(a85,b85),true)+'.';
+    else t+='Przez to termin P85 różni się o <b>'+Math.abs(d85)+' '+tyg_pl(Math.abs(d85))+'</b> – przy danych '+(d85>0?'B':'A')+' potrzeba bufora do '+fmtWeeks(Math.max(a85,b85),true)+'.';
   }else{
     const s85=q(C.countsBs,.85),pace=b85-s85,vr=s85-a85;
-    t='Zespół A kończy średnio '+nf1.format(sA.m)+', a zespół B '+nf1.format(sB.m)+' historyjki na tydzień (zmienność względna '+Math.round(cvA*100)+'% i '+Math.round(cvB*100)+'%). ';
-    t+=d85===0?'Termin P85 wychodzi dla obu taki sam: <b>'+fmtWeeks(a85,true)+'</b>.':'Termin P85 zespołu B wypada <b>o '+Math.abs(d85)+' '+tyg_pl(Math.abs(d85))+(d85>0?' później':' wcześniej')+'</b> niż zespołu A';
+    t='Dane A mają średnio '+nf1.format(sA.m)+', a dane B '+nf1.format(sB.m)+' historyjki na tydzień (zmienność względna '+Math.round(cvA*100)+'% i '+Math.round(cvB*100)+'%). ';
+    t+=d85===0?'Termin P85 wychodzi dla obu taki sam: <b>'+fmtWeeks(a85,true)+'</b>.':'Termin P85 dla danych B wypada <b>o '+Math.abs(d85)+' '+tyg_pl(Math.abs(d85))+(d85>0?' później':' wcześniej')+'</b> niż dla danych A';
     if(d85!==0)t+=' – w tym przez tempo: '+dTxt(pace)+', przez zmienność: '+dTxt(vr);
   }
   ans.innerHTML=t;
@@ -1243,8 +1266,8 @@ C.render=()=>{
     const pr=(lbl,f)=>'<tr><td style="font-weight:400;padding-left:24px">'+lbl+'</td><td></td><td></td>'+[.5,.85,.95].map(x=>'<td class="num">'+dTxt(f(x))+'</td>').join('')+'</tr>';
     extra=pr('w tym przez tempo',x=>q(C.countsB,x)-q(C.countsBs,x))+pr('w tym przez zmienność',x=>q(C.countsBs,x)-q(C.countsA,x));
   }
-  tb.innerHTML='<thead><tr><th>Zespół</th><th class="num">Średnio / tydz.</th><th class="num">Zmienność</th><th class="num">P50</th><th class="num">P85</th><th class="num">P95</th></tr></thead><tbody>'+
-    row('Zespół A',css('--s1'),sA,cvA,C.countsA)+row('Zespół B',css('--s2'),sB,cvB,C.countsB)+
+  tb.innerHTML='<thead><tr><th>Dane</th><th class="num">Średnio / tydz.</th><th class="num">Zmienność</th><th class="num">P50</th><th class="num">P85</th><th class="num">P95</th></tr></thead><tbody>'+
+    row('Dane A',css('--s1'),sA,cvA,C.countsA)+row('Dane B',css('--s2'),sB,cvB,C.countsB)+
     '<tr><td>Różnica B − A</td><td></td><td></td><td class="num">'+dTxt(q(C.countsB,.5)-q(C.countsA,.5))+'</td><td class="num">'+dTxt(d85)+'</td><td class="num">'+dTxt(q(C.countsB,.95)-q(C.countsA,.95))+'</td></tr>'+extra+'</tbody>';
   drawCompare();
 };
@@ -1293,7 +1316,7 @@ $('c_sims').addEventListener('input',()=>{$('c_simsErr').textContent='';});
 function genTeam(t){
   const err=$('c_genErr');err.textContent='';
   const avg=Number($('c_avg'+t).value),cv=Number($('c_var'+t).value);
-  if(!(avg>=0.5&&avg<=50)){err.textContent='Średnia zespołu '+t+': od 0,5 do 50.';return;}
+  if(!(avg>=0.5&&avg<=50)){err.textContent='Średnia danych '+t+': od 0,5 do 50.';return;}
   const cur=$('c_hist'+t).value.split(/[,;\s]+/).filter(x=>x!=='').length;const n=cur>=3&&cur<=52?cur:10;
   $('c_hist'+t).value=genValues(n,avg,cv,Math.random).join(', ');$('c_err'+t).textContent='';markStale(C);
 }
@@ -1329,7 +1352,8 @@ function current(){return Object.keys(TABS).find(k=>!$(TABS[k][1]).hidden);}
 
 $('a_backlog').addEventListener('input',()=>{$('a_backlogOut').textContent=$('a_backlog').value;markStale(A);});
 $('a_growth').addEventListener('input',()=>{$('a_growthOut').textContent=$('a_growth').value+'%';markStale(A);});
-$('a_growthRand').addEventListener('change',()=>markStale(A));
+$('a_growthMode').addEventListener('change',()=>{showGrowth();markStale(A);});
+$('a_growthList').addEventListener('input',()=>{$('a_growthErr').textContent='';markStale(A);});
 $('a_period').addEventListener('change',()=>A.table());
 $('b_date').addEventListener('change',()=>{$('b_dateErr').textContent='';updateBHint();markStale(B);});
 $('b_backlog').addEventListener('input',()=>B.render());
@@ -1468,6 +1492,7 @@ const galton=(()=>{
 })();
 
 renderOff();updateBHint();
+showGrowth();
 A.runAll();B.runAll();C.runAll();
 setFx(FX);moveInk();applyTheme(THEME);
 </script>
